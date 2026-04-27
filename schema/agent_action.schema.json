@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://auditlayer.io/schemas/agent_action.v1.json",
+  "title": "AuditLayer Agent Action Evidence Record v1",
+  "description": "Canonical evidence record emitted by AuditLayer for every AI agent action inside a regulated environment. Every field is designed to satisfy an auditor question under HIPAA Security Rule, SOC 2 Trust Services Criteria, or EU AI Act Article 12/13.",
+  "type": "object",
+  "required": [
+    "evidence_id",
+    "tenant_id",
+    "actor",
+    "agent",
+    "timestamp",
+    "action",
+    "resource",
+    "data_sensitivity",
+    "intent",
+    "system",
+    "outcome",
+    "control_mappings",
+    "hash_chain"
+  ],
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Globally unique ID for this evidence record. Immutable."
+    },
+    "tenant_id": {
+      "type": "string",
+      "description": "Customer tenant identifier."
+    },
+    "actor": {
+      "type": "object",
+      "required": ["actor_type", "human_principal_id", "on_behalf_of"],
+      "properties": {
+        "actor_type": {
+          "type": "string",
+          "enum": ["ai_agent", "human", "hybrid_human_supervised_agent"]
+        },
+        "human_principal_id": {
+          "type": ["string", "null"],
+          "description": "The human user whose session authorized the agent, if any. Null for fully autonomous agents."
+        },
+        "on_behalf_of": {
+          "type": ["string", "null"],
+          "description": "Organizational principal on whose behalf the agent acted (e.g. department, service account)."
+        }
+      }
+    },
+    "agent": {
+      "type": "object",
+      "required": ["agent_id", "agent_name", "model", "model_version", "provider", "framework"],
+      "properties": {
+        "agent_id": { "type": "string" },
+        "agent_name": { "type": "string" },
+        "model": { "type": "string", "description": "e.g. gpt-4.1, claude-sonnet-4.5, llama-3.3-70b" },
+        "model_version": { "type": "string" },
+        "provider": { "type": "string", "description": "OpenAI, Anthropic, Azure OpenAI, self-hosted, etc." },
+        "framework": { "type": "string", "description": "LangChain, LangGraph, CrewAI, custom, MCP" },
+        "system_prompt_hash": { "type": ["string", "null"], "description": "SHA-256 of system prompt at execution time." },
+        "tools_available": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp when the action was executed."
+    },
+    "action": {
+      "type": "object",
+      "required": ["action_type", "tool_invoked", "parameters_hash"],
+      "properties": {
+        "action_type": {
+          "type": "string",
+          "enum": ["read", "write", "update", "delete", "query", "decision", "external_call", "code_execution", "file_access", "communication"]
+        },
+        "tool_invoked": { "type": "string", "description": "Name of the MCP tool / function called." },
+        "parameters_hash": { "type": "string", "description": "SHA-256 of input parameters. Parameters themselves stored encrypted in evidence_detail." },
+        "reasoning_trace_id": { "type": ["string", "null"], "description": "Pointer to stored chain-of-thought / reasoning log." }
+      }
+    },
+    "resource": {
+      "type": "object",
+      "required": ["resource_type", "resource_id", "system_of_record"],
+      "properties": {
+        "resource_type": {
+          "type": "string",
+          "enum": ["phi_record", "pii_record", "financial_record", "file", "database_row", "api_endpoint", "email", "message", "ticket", "other"]
+        },
+        "resource_id": { "type": "string" },
+        "system_of_record": { "type": "string", "description": "Epic, Salesforce, Snowflake, S3 bucket, etc." },
+        "resource_owner": { "type": ["string", "null"] }
+      }
+    },
+    "data_sensitivity": {
+      "type": "object",
+      "required": ["classification", "regulated_data_types"],
+      "properties": {
+        "classification": {
+          "type": "string",
+          "enum": ["public", "internal", "confidential", "restricted", "regulated"]
+        },
+        "regulated_data_types": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["PHI", "PII", "PCI", "SPI", "FTI", "CUI", "EU_PERSONAL_DATA", "NONE"] }
+        },
+        "fields_touched": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "intent": {
+      "type": "object",
+      "required": ["declared_purpose", "business_justification"],
+      "properties": {
+        "declared_purpose": { "type": "string", "description": "Human-readable purpose captured at agent initialization." },
+        "business_justification": { "type": "string" },
+        "minimum_necessary_assertion": {
+          "type": "boolean",
+          "description": "HIPAA 164.502(b) minimum necessary standard satisfied?"
+        }
+      }
+    },
+    "system": {
+      "type": "object",
+      "required": ["environment", "host", "source_ip"],
+      "properties": {
+        "environment": { "type": "string", "enum": ["production", "staging", "development"] },
+        "host": { "type": "string" },
+        "source_ip": { "type": "string" },
+        "session_id": { "type": "string" },
+        "request_id": { "type": "string" }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "required": ["status", "records_affected"],
+      "properties": {
+        "status": { "type": "string", "enum": ["success", "failure", "blocked_by_policy", "partial", "human_override"] },
+        "records_affected": { "type": "integer", "minimum": 0 },
+        "error_code": { "type": ["string", "null"] },
+        "output_hash": { "type": ["string", "null"] },
+        "human_in_the_loop": {
+          "type": "object",
+          "properties": {
+            "required": { "type": "boolean" },
+            "approver_id": { "type": ["string", "null"] },
+            "approved_at": { "type": ["string", "null"], "format": "date-time" }
+          }
+        }
+      }
+    },
+    "control_mappings": {
+      "type": "array",
+      "description": "Framework control IDs this evidence record satisfies. Generated by the mapping engine.",
+      "items": {
+        "type": "object",
+        "required": ["framework", "control_id", "control_language", "satisfies"],
+        "properties": {
+          "framework": { "type": "string", "enum": ["HIPAA", "SOC2", "EU_AI_ACT", "NIST_AI_RMF", "FedRAMP"] },
+          "control_id": { "type": "string" },
+          "control_language": { "type": "string" },
+          "satisfies": { "type": "string", "enum": ["fully", "partially", "contributes_to"] },
+          "auditor_narrative": { "type": "string", "description": "Plain-English sentence an auditor can drop into a workpaper." }
+        }
+      }
+    },
+    "hash_chain": {
+      "type": "object",
+      "required": ["prev_hash", "this_hash"],
+      "properties": {
+        "prev_hash": { "type": "string" },
+        "this_hash": { "type": "string", "description": "SHA-256 over the canonicalized record + prev_hash. Tamper-evident chain." }
+      }
+    }
+  }
+}

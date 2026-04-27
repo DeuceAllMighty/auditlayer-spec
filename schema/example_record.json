@@ -1,0 +1,94 @@
+{
+  "evidence_id": "7c5d9a42-3a88-4b6f-9b1e-2d7c61a9b401",
+  "tenant_id": "meridian-rcm-prod",
+  "actor": {
+    "actor_type": "ai_agent",
+    "human_principal_id": "u_4412_nurse_albright",
+    "on_behalf_of": "dept.prior_auth.meridian"
+  },
+  "agent": {
+    "agent_id": "agt_priorauth_07",
+    "agent_name": "PriorAuthCopilot",
+    "model": "gpt-4.1",
+    "model_version": "2025-08-14",
+    "provider": "Azure OpenAI",
+    "framework": "LangGraph + MCP",
+    "system_prompt_hash": "sha256:9ac0...d41e",
+    "tools_available": ["epic.patient.read", "payer.submit_auth", "pdf.generate"]
+  },
+  "timestamp": "2026-04-18T14:22:09Z",
+  "action": {
+    "action_type": "read",
+    "tool_invoked": "epic.patient.read",
+    "parameters_hash": "sha256:5f81...ab12",
+    "reasoning_trace_id": "trace_2026-04-18_14-22-09_priorauth07"
+  },
+  "resource": {
+    "resource_type": "phi_record",
+    "resource_id": "mrn:EP-8847213",
+    "system_of_record": "Epic Hyperspace",
+    "resource_owner": "Meridian Health / Cardiology"
+  },
+  "data_sensitivity": {
+    "classification": "regulated",
+    "regulated_data_types": ["PHI"],
+    "fields_touched": ["patient.name", "patient.dob", "diagnosis.icd10", "insurance.payer_id", "clinical_notes.cardiology_2026_04_12"]
+  },
+  "intent": {
+    "declared_purpose": "Assemble prior authorization packet for cardiac catheterization procedure",
+    "business_justification": "Payer Aetna requires clinical documentation for CPT 93458 prior auth; agent pulling minimum necessary clinical fields.",
+    "minimum_necessary_assertion": true
+  },
+  "system": {
+    "environment": "production",
+    "host": "priorauth-agent-07.meridian.internal",
+    "source_ip": "10.44.12.88",
+    "session_id": "sess_a91b22c4",
+    "request_id": "req_01HW9K2XD7"
+  },
+  "outcome": {
+    "status": "success",
+    "records_affected": 1,
+    "error_code": null,
+    "output_hash": "sha256:c0ff...ee11",
+    "human_in_the_loop": {
+      "required": true,
+      "approver_id": "u_4412_nurse_albright",
+      "approved_at": "2026-04-18T14:22:41Z"
+    }
+  },
+  "control_mappings": [
+    {
+      "framework": "HIPAA",
+      "control_id": "164.312(b)",
+      "control_language": "Implement hardware, software, and/or procedural mechanisms that record and examine activity in information systems that contain or use electronic protected health information.",
+      "satisfies": "fully",
+      "auditor_narrative": "AuditLayer recorded AI agent PriorAuthCopilot (agt_priorauth_07) reading PHI record mrn:EP-8847213 on 2026-04-18 14:22:09 UTC from Epic Hyperspace, authorized by nurse u_4412, with minimum-necessary assertion and human approval within 32 seconds."
+    },
+    {
+      "framework": "HIPAA",
+      "control_id": "164.502(b)",
+      "control_language": "Minimum necessary. A covered entity must make reasonable efforts to limit protected health information to the minimum necessary to accomplish the intended purpose.",
+      "satisfies": "fully",
+      "auditor_narrative": "Agent declared purpose (prior authorization packet) and accessed only 5 clinical fields scoped to the target CPT code 93458."
+    },
+    {
+      "framework": "SOC2",
+      "control_id": "CC6.1",
+      "control_language": "The entity implements logical access security software, infrastructure, and architectures over protected information assets to protect them from security events.",
+      "satisfies": "contributes_to",
+      "auditor_narrative": "Non-human principal (AI agent) access to regulated data asset was authenticated, logged, and tied to a human principal accountable for the session."
+    },
+    {
+      "framework": "EU_AI_ACT",
+      "control_id": "Art. 12",
+      "control_language": "High-risk AI systems shall technically allow for the automatic recording of events (logs) over the lifetime of the system.",
+      "satisfies": "fully",
+      "auditor_narrative": "Event logged with model version, system prompt hash, input/output hashes, and tamper-evident hash chain."
+    }
+  ],
+  "hash_chain": {
+    "prev_hash": "sha256:1a2b...9d8c",
+    "this_hash": "sha256:8e4f...7721"
+  }
+}
