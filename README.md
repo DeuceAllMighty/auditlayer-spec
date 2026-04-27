@@ -129,3 +129,11 @@ Apache 2.0. Use it. Build on it. Ship products with it. Just don't trademark "Au
 ---
 
 *Built and maintained by AuditLayer. Find us at [auditlayer.io](https://auditlayer.io).*
+
+## 💰 Bounty Contribution
+
+- **Task:** RFC: hash-chain anchoring options (in-DB vs S3 Object Lock vs OpenTimestamps)
+- **Reward:** $1500
+- **Source:** GitHub-Paid
+- **Date:** 2026-04-28
+
