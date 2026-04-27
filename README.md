@@ -128,4 +128,4 @@ Apache 2.0. Use it. Build on it. Ship products with it. Just don't trademark "Au
 
 ---
 
-*Built and maintained by AuditLayer. Find us at [auditlayer.io](https://auditlayer.io).*
+*Built and maintained by AuditLayer. Find us at [getauditlayer.com](https://getauditlayer.com).*
