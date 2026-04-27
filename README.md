@@ -6,7 +6,7 @@
 [![Spec Version](https://img.shields.io/badge/spec-v0.1.0-blue.svg)](SPEC.md)
 [![Validate](https://github.com/DeuceAllMighty/auditlayer-spec/actions/workflows/validate.yml/badge.svg)](https://github.com/DeuceAllMighty/auditlayer-spec/actions/workflows/validate.yml)
 
-> **Reference implementation:** A working FastAPI service that emits, hashes, and renders this schema as an auditor-ready PDF lives in a private repo. Read access available to design partners on request: [baroque2@protonmail.com](mailto:baroque2@protonmail.com).
+> **Reference implementation:** A working FastAPI service that emits, hashes, and renders this schema as an auditor-ready PDF lives in a private repo. Read access available to design partners on request: [kevin@getauditlayer.com](mailto:kevin@getauditlayer.com).
 
 ## Why this exists
 
