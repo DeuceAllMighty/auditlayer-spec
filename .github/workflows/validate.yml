@@ -1,0 +1,31 @@
+name: validate-spec
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate example record against schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install jsonschema
+        run: pip install jsonschema
+
+      - name: Validate
+        run: |
+          python - <<'PY'
+          import json, jsonschema
+          schema = json.load(open("schema/agent_action.schema.json"))
+          record = json.load(open("schema/example_record.json"))
+          jsonschema.validate(record, schema)
+          print("schema valid; example record validates")
+          PY
